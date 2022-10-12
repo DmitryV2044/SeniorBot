@@ -9,7 +9,7 @@ load_dotenv()
 bot_token = os.getenv('DISCORD_TOKEN')
 config = {
     'token': bot_token,
-    'prefix': '$',
+    'prefix': '/',
 }
 
 
