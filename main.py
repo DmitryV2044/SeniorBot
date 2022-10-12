@@ -3,29 +3,14 @@ import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 
+import buttons
+
 load_dotenv()
 bot_token = os.getenv('DISCORD_TOKEN')
 config = {
     'token': bot_token,
-    'prefix': '/',
+    'prefix': '$',
 }
-custom_roles = {'Python', 'C#', 'C++', 'Blender', 'Unreal Engine', 'Unity', 'Godot'}
-
-default_button_style = discord.ButtonStyle.blurple
-
-
-class CustomRoleView(discord.ui.View):
-    def __init__(self):
-        super().__init__(timeout=None)
-
-        self.custom_role_buttons = []
-        for role in custom_roles:
-            self.custom_role_buttons.append(
-                discord.ui.Button(style=default_button_style,label=role,custom_id=role))
-
-        for btn in self.custom_role_buttons:
-            btn.callback = add_role_callback
-            self.add_item(btn)
 
 
 class PersistentViewBot(commands.Bot):
@@ -36,7 +21,7 @@ class PersistentViewBot(commands.Bot):
         super().__init__(command_prefix=commands.when_mentioned_or(config['prefix']), intents=intents)
 
     async def setup_hook(self) -> None:
-        self.add_view(CustomRoleView())
+        self.add_view(buttons.CustomRoleView())
 
     async def on_ready(self):
         print(f'Logged in as {self.user} (ID: {self.user.id})')
@@ -48,32 +33,12 @@ bot = PersistentViewBot()
 @bot.command(name="roles_message")
 @commands.has_role('admin')
 async def button(ctx: commands.Context):
-    view = CustomRoleView()
+    view = buttons.CustomRoleView()
     await ctx.message.delete()
-    await ctx.send("Выдай себе роль что бы показать, с чем ты умеешь работать: ", view=view)
-
-
-async def add_role_callback(interaction: discord.Interaction):
-    # await interaction.response.edit_message(
-    #     content="Выдай себе роль что бы показать, с чем ты умеешь работать: ",
-    #     view=CustomRoleView())
-    user = interaction.user
-    role_name = interaction.data['custom_id']
-    role = discord.utils.get(interaction.guild.roles, name=role_name)
-    if role is None:
-        role = await interaction.guild.create_role(
-            name=role_name, colour=discord.Colour.teal(),
-            mentionable=False, reason='auto created custom role')
-        print('none')
-
-    message = ""
-    if role in user.roles:
-        await user.remove_roles(role, reason='auto custom role removal')
-        message = f'Убрана роль: {role_name}!'
-    else:
-        await user.add_roles(role, reason='auto custom role adding')
-        message = f'Добавлена роль: {role_name}!'
-    await interaction.response.send_message(content=message, ephemeral=True)
+    await ctx.send("**Дайте себе роль!**"
+                   "\nНажмите кнопку роли, которую хотите добавить!"
+                   "\nНажмите еще раз, чтобы удалить эту роль!"
+                   "\nРоли:", view=view)
 
 
 @bot.command(name='kick_test')
@@ -91,7 +56,6 @@ async def get_guild(ctx: commands.Context):
 
 @bot.command(name="gg")
 async def test2(ctx):
-    print("123")
     await ctx.send('ХАХАХАХА, ты написал gg, а на самом деле это test2.\nХотя, ну, test2, ладно.')
 
 
