@@ -1,6 +1,7 @@
 import os
 import discord
 from discord.ext import commands
+from discord import app_commands
 from dotenv import load_dotenv
 
 import buttons
@@ -24,51 +25,27 @@ class PersistentViewBot(commands.Bot):
         self.add_view(buttons.CustomRoleView())
 
     async def on_ready(self):
+        await self.tree.sync()
         print(f'Logged in as {self.user} (ID: {self.user.id})')
 
 
 bot = PersistentViewBot()
 
 
-@bot.command(name="roles_message")
+@bot.tree.command(name="roles_message", description="Создать сообщение с кнопками для выбора роли")
 @commands.has_role('admin')
-async def button(ctx: commands.Context):
+async def send_roles_message(interaction: discord.Interaction):
     view = buttons.CustomRoleView()
-    await ctx.message.delete()
-    await ctx.send("**Дайте себе роль!**"
-                   "\nНажмите кнопку роли, которую хотите добавить!"
-                   "\nНажмите еще раз, чтобы удалить эту роль!"
-                   "\nРоли:", view=view)
+    await interaction.response.send_message(
+        content="**Дайте себе роль!**"
+        "\nНажмите кнопку роли, которую хотите добавить!"
+        "\nНажмите еще раз, чтобы удалить эту роль!"
+        "\nРоли:", view=view)
 
 
-@bot.command(name='kick_test')
-@commands.has_role("admin")
-async def kick(ctx: commands.Context, user: discord.User, *arg, reason='Причина не указана'):
-    await ctx.guild.kick(user)
-    await ctx.send(f'Пользователь {user.name} был кикнут (?)')
-
-
-@bot.command(name='guild')
-async def get_guild(ctx: commands.Context):
-    print("123")
-    await ctx.send(f'guild id: {ctx.guild.id}')
-
-
-@bot.command(name="gg")
-async def test2(ctx):
-    await ctx.send('ХАХАХАХА, ты написал gg, а на самом деле это test2.\nХотя, ну, test2, ладно.')
-
-
-@bot.event
-async def on_reaction_add(reaction: discord.Reaction, user):
-    print("1323")
-    if str(reaction.emoji) == '👉':
-        print("111")
-
-
-@bot.event
-async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
-    print(f"raw reaction {payload.guild_id}")
+@bot.tree.command(name='guild', description="Вывести guild id сервера")
+async def get_guild(interaction:  discord.Interaction):
+    await interaction.response.send_message(f'guild id: {interaction.guild.id}', ephemeral=True)
 
 
 bot.run(config['token'])
