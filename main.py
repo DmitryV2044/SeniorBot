@@ -50,9 +50,9 @@ async def send_roles_message(interaction: discord.Interaction):
     view = views.CustomRoleView(roles.special_roles)
     await interaction.response.send_message(
         content="**Дайте себе специальную роль!**"
+        "\n**Данные роли дают доступ к тематическим чатам**"
         "\nНажмите кнопку роли, которую хотите добавить!"
         "\nНажмите еще раз, чтобы удалить эту роль!"
-        "\n**Данные роли дают доступ к тематическим чатам**"
         "\nРоли:", view=view)
 
 
