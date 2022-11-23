@@ -21,7 +21,9 @@ class PersistentViewBot(commands.Bot):
         super().__init__(command_prefix=commands.when_mentioned_or(config['prefix']), intents=intents)
 
     async def setup_hook(self) -> None:
-        self.add_view(views.CustomRoleView())
+        self.add_view(views.CustomRoleView(roles.custom_roles))
+        self.add_view(views.CustomRoleView(roles.special_roles))
+
 
     async def on_ready(self):
         await self.tree.sync()
