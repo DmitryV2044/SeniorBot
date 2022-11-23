@@ -3,6 +3,7 @@ from discord.ext import commands
 from dotenv import load_dotenv
 from code_runner import *
 import views
+import roles
 
 load_dotenv()
 bot_token = os.getenv('DISCORD_TOKEN')
@@ -33,11 +34,23 @@ bot = PersistentViewBot()
 @bot.tree.command(name="roles_message", description="Создать сообщение с кнопками для выбора роли")
 @commands.has_role('admin')
 async def send_roles_message(interaction: discord.Interaction):
-    view = views.CustomRoleView()
+    view = views.CustomRoleView(roles.custom_roles)
     await interaction.response.send_message(
         content="**Дайте себе роль!**"
         "\nНажмите кнопку роли, которую хотите добавить!"
         "\nНажмите еще раз, чтобы удалить эту роль!"
+        "\nРоли:", view=view)
+
+
+@bot.tree.command(name="special_roles_message", description="Создать сообщение с кнопками для выбора специальной роли")
+@commands.has_role('admin')
+async def send_roles_message(interaction: discord.Interaction):
+    view = views.CustomRoleView(roles.special_roles)
+    await interaction.response.send_message(
+        content="**Дайте себе специальную роль!**"
+        "\nНажмите кнопку роли, которую хотите добавить!"
+        "\nНажмите еще раз, чтобы удалить эту роль!"
+        "\n**Данные роли дают доступ к тематическим чатам**"
         "\nРоли:", view=view)
 
 

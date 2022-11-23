@@ -1,14 +1,13 @@
 import discord
-import roles
 
 default_button_style = discord.ButtonStyle.blurple
 
 
 class CustomRoleView(discord.ui.View):
-    def __init__(self):
+    def __init__(self, custom_roles):
         super().__init__(timeout=None)
 
-        self.custom_roles = roles.custom_roles
+        self.custom_roles = custom_roles
         self.custom_role_buttons = []
 
         for role in self.custom_roles:
